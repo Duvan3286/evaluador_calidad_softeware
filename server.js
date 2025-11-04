@@ -96,9 +96,8 @@ app.get("/api/pagespeed", async (req, res) => {
   }
 });
 
-// 🤖 Gemini QA (versión producción)
 app.get("/api/gemini", async (req, res) => {
-  const { url } = req.query;
+  const { url, debug } = req.query;
   if (!url) return res.status(400).json({ error: "Falta la URL" });
 
   try {
@@ -113,71 +112,93 @@ app.get("/api/gemini", async (req, res) => {
     const metaDescription = $('meta[name="description"]').attr("content") || "No detectada";
     const resourcesCount = $("img,script,link").length;
 
-    // ✨ Prompt ajustado para Gemini
     const prompt = `
-Eres un ingeniero QA experto en evaluación de calidad de software web.
+Actúa como un **ingeniero QA experto en evaluación de calidad de software web**.
+Audita el siguiente sitio con base en las prácticas de Lighthouse, OWASP ZAP, W3C Validator y PageSpeed Insights.
 
-Analiza el sitio: ${url}
-Título: "${pageTitle}"
-Descripción: "${metaDescription}"
-Tiempo de carga: ${loadTime} ms
-Recursos detectados: ${resourcesCount}
-Código HTTP: ${statusCode}
+### Información técnica del sitio:
+- URL: ${url}
+- HTTPS activo: ${url.startsWith("https") ? "Sí" : "No"}
+- Estado HTTP: ${statusCode}
+- Tiempo de respuesta: ${loadTime} ms
+- Título: "${pageTitle || "No detectado"}"
+- Descripción: "${metaDescription}"
+- Tamaño HTML: ${html.length} caracteres
+- Recursos externos: ${resourcesCount}
 
-Evalúa de 0 a 5 los siguientes aspectos:
-- mantenibilidad
-- compatibilidad
-- fiabilidad
-- portabilidad
-
-Responde **solo** en formato JSON con el siguiente esquema exacto:
-
+### Devuelve solo un JSON válido con este formato:
 {
-  "mantenibilidad": número,
-  "compatibilidad": número,
-  "fiabilidad": número,
-  "portabilidad": número,
-  "comentarios": "texto breve"
+  "mantenibilidad": number,
+  "compatibilidad": number,
+  "fiabilidad": number,
+  "portabilidad": number,
+  "comentarios": "Breve observación técnica sobre el estado general del sitio"
 }
-    `;
+`;
 
-    // 🚀 API oficial de Gemini
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const geminiResponse = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+      }),
     });
 
     const data = await geminiResponse.json();
+
     const rawText =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       data?.candidates?.[0]?.output_text ||
       "";
 
-    // 🧹 Limpiar y parsear
-    let parsed;
-    try {
-      const cleaned = rawText.replace(/```json/i, "").replace(/```/g, "").trim();
-      parsed = JSON.parse(cleaned);
-    } catch {
-      // Si Gemini responde raro o vacío, fallback seguro
-      parsed = {
-        mantenibilidad: (Math.random() * 2 + 3).toFixed(1),
-        compatibilidad: (Math.random() * 2 + 3).toFixed(1),
-        fiabilidad: (Math.random() * 2 + 3).toFixed(1),
-        portabilidad: (Math.random() * 2 + 3).toFixed(1),
-        comentarios: rawText || "Sin comentarios procesables de Gemini.",
-      };
+    if (debug === "true") {
+      // 🔍 muestra TODO lo que devuelve Gemini sin procesar
+      return res.json({
+        rawText,
+        fullResponse: data,
+      });
     }
+
+   const cleaned = rawText
+  .replace(/```json/i, "")
+  .replace(/```/g, "")
+  .replace(/^[^{]*({[\s\S]*})[^}]*$/, "$1")
+  .trim();
+
+let parsed;
+try {
+  parsed = JSON.parse(cleaned);
+
+  // 🧮 Escala valores 0–100 → 0–5 si hace falta
+  for (const key of ["mantenibilidad", "compatibilidad", "fiabilidad", "portabilidad"]) {
+    if (parsed[key] > 10) parsed[key] = (parsed[key] / 20).toFixed(1); // ejemplo: 80 → 4.0
+  }
+
+  // 🔍 Asegura que siempre exista comentario
+  if (!parsed.comentarios || parsed.comentarios.trim() === "")
+    parsed.comentarios = "Sin comentarios generados por Gemini.";
+
+} catch (err) {
+  console.error("❌ Error parseando JSON:", err.message);
+  parsed = {
+    mantenibilidad: 0,
+    compatibilidad: 0,
+    fiabilidad: 0,
+    portabilidad: 0,
+    comentarios: rawText || "Sin comentarios procesables de Gemini.",
+  };
+}
+
 
     res.json(parsed);
   } catch (err) {
-    console.error("❌ Error al analizar con Gemini:", err);
+    console.error("Error al analizar con Gemini:", err);
     res.status(500).json({ error: "Error al conectar o procesar con Gemini" });
   }
 });
+
 
 
 // 🚀 Iniciar servidor

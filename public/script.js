@@ -763,31 +763,35 @@ async function evaluarSitio(url) {
     });
 
     // --- 5️⃣ Promedio total ---
-    const promedio =
-      Object.values(criterios).reduce((a, b) => a + parseFloat(b), 0) /
-      Object.keys(criterios).length;
+const promedio =
+  Object.values(criterios).reduce((a, b) => a + parseFloat(b || 0), 0) /
+  Object.keys(criterios).length;
 
-    promedioEl.textContent = promedio.toFixed(2);
+// 🔧 Convertir todos los criterios a número antes de mostrarlos
+for (const key in criterios) {
+  criterios[key] = parseFloat(criterios[key]) || 0;
+}
 
-    // --- 6️⃣ Mostrar resultados ---
-    resultadoDiv.innerHTML = `
-      <h4>Resultados del Análisis</h4>
-      <ul>
-        <li><b>Usabilidad:</b> ${criterios.usabilidad.toFixed(1)}</li>
-        <li><b>Eficiencia:</b> ${criterios.eficiencia.toFixed(1)}</li>
-        <li><b>Seguridad:</b> ${criterios.seguridad.toFixed(1)}</li>
-        <li><b>Funcionalidad:</b> ${criterios.funcionalidad.toFixed(1)}</li>
-        <li><b>Mantenibilidad:</b> ${criterios.mantenibilidad.toFixed(1)}</li>
-        <li><b>Compatibilidad:</b> ${criterios.compatibilidad.toFixed(1)}</li>
-        <li><b>Fiabilidad:</b> ${criterios.fiabilidad.toFixed(1)}</li>
-        <li><b>Portabilidad:</b> ${criterios.portabilidad.toFixed(1)}</li>
-      </ul>
-      <p><b>Promedio general:</b> ${promedio.toFixed(2)}</p>
-      <p><b>Comentarios:</b> ${geminiData.comentarios || "Sin comentarios disponibles."}</p>
-    `;
-    resultadoDiv.classList.remove("d-none");
+// --- 6️⃣ Mostrar resultados ---
+resultadoDiv.innerHTML = `
+  <h4>Resultados del Análisis</h4>
+  <ul>
+    <li><b>Usabilidad:</b> ${criterios.usabilidad.toFixed(1)}</li>
+    <li><b>Eficiencia:</b> ${criterios.eficiencia.toFixed(1)}</li>
+    <li><b>Seguridad:</b> ${criterios.seguridad.toFixed(1)}</li>
+    <li><b>Funcionalidad:</b> ${criterios.funcionalidad.toFixed(1)}</li>
+    <li><b>Mantenibilidad:</b> ${criterios.mantenibilidad.toFixed(1)}</li>
+    <li><b>Compatibilidad:</b> ${criterios.compatibilidad.toFixed(1)}</li>
+    <li><b>Fiabilidad:</b> ${criterios.fiabilidad.toFixed(1)}</li>
+    <li><b>Portabilidad:</b> ${criterios.portabilidad.toFixed(1)}</li>
+  </ul>
+  <p><b>Promedio general:</b> ${promedio.toFixed(2)}</p>
+  <p><b>Comentarios:</b> ${geminiData.comentarios || "Sin comentarios disponibles."}</p>
+`;
+resultadoDiv.classList.remove("d-none");
 
-    return criterios;
+return criterios;
+
   } catch (err) {
     console.error("❌ Error obteniendo métricas:", err);
     alert("Ocurrió un error al analizar la URL. Verifica la dirección e intenta nuevamente.");
