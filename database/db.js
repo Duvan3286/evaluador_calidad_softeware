@@ -1,22 +1,15 @@
-// database/db.js
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
-import path from "path";
-import { fileURLToPath } from "url";
+import { createClient } from "@libsql/client";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Si usas variables de entorno (.env)
+const db = createClient({
+  url: process.env.TURSO_DB_URL || "libsql://calidad-software-duvan3286.aws-us-east-1.turso.io",
+  authToken: process.env.TURSO_DB_TOKEN,
+});
 
-const dbPath = path.join(__dirname, "../data/calidad.db");
-
+// Función equivalente a tu openDb(), pero usando Turso
 export async function openDb() {
-  const db = await open({
-    filename: dbPath,
-    driver: sqlite3.Database,
-  });
-
-  // Crear tabla si no existe
-  await db.exec(`
+  // Crear tabla si no existe (solo se ejecuta una vez)
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS evaluaciones (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       app_name TEXT,
@@ -31,3 +24,5 @@ export async function openDb() {
 
   return db;
 }
+
+export default db;
