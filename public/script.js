@@ -1065,12 +1065,17 @@ form.addEventListener("submit", async (e) => {
         const seo = parseFloat(document.getElementById("seguridad").value) * 20;
         
         const resultadoFinal = promedioSpan.textContent; // Obtener el promedio calculado
+        const promedioFinal = parseFloat(promedioSpan.textContent);
+          if (isNaN(promedioFinal)) {
+            alert("No se pudo calcular el promedio. Revisa los sliders.");
+            return;
+          }
 
         await guardarEvaluacion({
             app_name,
             descripcion,
             // Guardar el promedio final
-            resultado: resultadoFinal, 
+            resultado: promedioFinal,
             // Guardar los scores de PageSpeed (0-100)
             scores_json: JSON.stringify({ 
                 performance: performance.toFixed(0), 
