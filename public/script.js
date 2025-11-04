@@ -1064,7 +1064,9 @@ form.addEventListener("submit", async (e) => {
         const bestPractices = parseFloat(document.getElementById("funcionalidad").value) * 20;
         const seo = parseFloat(document.getElementById("seguridad").value) * 20;
         
-        const resultadoFinal = promedioSpan.textContent; // Obtener el promedio calculado
+        //const resultadoFinal = promedioSpan.textContent; // Obtener el promedio calculado
+        const resultadoFinal = parseFloat(document.getElementById("promedioEnTiempoReal").textContent);
+
         const promedioFinal = parseFloat(promedioSpan.textContent);
           if (isNaN(promedioFinal)) {
             alert("No se pudo calcular el promedio. Revisa los sliders.");
