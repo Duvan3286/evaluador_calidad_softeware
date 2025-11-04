@@ -216,7 +216,12 @@ Devuelve **únicamente un JSON válido** con este formato exacto:
 });
 
 // 🚀 Iniciar servidor
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`✅ Servidor ejecutándose en http://localhost:${PORT}`);
+// const PORT = 3000;
+// app.listen(PORT, () => {
+//   console.log(`✅ Servidor ejecutándose en http://localhost:${PORT}`);
+// });
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, '0.0.0.0', () => { // Escucha en 0.0.0.0
+    console.log(`✅ Servidor ejecutándose en el puerto ${PORT}`); 
 });

@@ -197,7 +197,8 @@ function formatearFecha(fecha) {
 // Cargar evaluaciones
 async function cargarEvaluaciones() {
   try {
-    const resp = await fetch("http://localhost:3000/api/evaluaciones");
+    // const resp = await fetch("http://localhost:3000/api/evaluaciones");
+    const resp = await fetch("/api/evaluaciones");
     const data = await resp.json();
 
     evaluacionesGlobales = data;
