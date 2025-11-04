@@ -742,17 +742,24 @@ async function evaluarSitio(url) {
     const geminiData = await geminiRes.json();
     console.log("🤖 Evaluación adicional (Gemini):", geminiData);
 
+    // Normaliza valores de 0-100 a 0-5
+    function normalizar(valor) {
+      if (!valor && valor !== 0) return 0;
+      return Math.min(Math.max(parseFloat(valor), 0), 100) / 20;
+    }
+
     // --- 3️⃣ Combinar criterios ---
     const criterios = {
-      usabilidad: parseFloat(usabilidadValue) || 0,
-      eficiencia: parseFloat(eficienciaValue) || 0,
-      seguridad: parseFloat(seguridadValue) || 0,
-      funcionalidad: parseFloat(funcionalidadValue) || 0,
-      mantenibilidad: parseFloat(geminiData.mantenibilidad) || 0,
-      compatibilidad: parseFloat(geminiData.compatibilidad) || 0,
-      fiabilidad: parseFloat(geminiData.fiabilidad) || 0,
-      portabilidad: parseFloat(geminiData.portabilidad) || 0,
+      usabilidad: parseFloat(usabilidadValue),
+      eficiencia: parseFloat(eficienciaValue),
+      seguridad: parseFloat(seguridadValue),
+      funcionalidad: parseFloat(funcionalidadValue),
+      mantenibilidad: normalizar(geminiData.mantenibilidad),
+      compatibilidad: normalizar(geminiData.compatibilidad),
+      fiabilidad: normalizar(geminiData.fiabilidad),
+      portabilidad: normalizar(geminiData.portabilidad),
     };
+
 
     console.log("🧩 Antes de normalizar:", criterios);
 
