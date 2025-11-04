@@ -74,7 +74,8 @@ app.get("/api/evaluaciones", async (req, res) => {
 });
 
 // API Key de Google PageSpeed
-const GOOGLE_API_KEY = "AIzaSyBI745APBmHfTfHuc1-9XqzjqtkyQvS--0";
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+
 
 app.get("/api/pagespeed", async (req, res) => {
   const { url } = req.query;
