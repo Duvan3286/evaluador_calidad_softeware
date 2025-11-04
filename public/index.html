@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluador de Calidad de Software</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="estilos.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    .form-range {
+      width: 100%;
+    }
+
+    .progress {
+      height: 10px;
+    }
+  </style>
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">ACA Calidad de Software</a>
+    </div>
+  </nav>
+
+  <main class="container my-4">
+    <!-- TABS PRINCIPALES -->
+    <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button"
+          role="tab">Información</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="evaluador-tab" data-bs-toggle="tab" data-bs-target="#evaluador" type="button"
+          role="tab">Evaluador</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="historial-tab" data-bs-toggle="tab" data-bs-target="#historial" type="button"
+          role="tab">Historial</button>
+      </li>
+    </ul>
+
+    <div class="tab-content mt-3" id="mainTabsContent">
+      <!-- PESTAÑA 1: INFORMACIÓN REDISEÑADA -->
+      <div class="tab-pane fade show active" id="info" role="tabpanel">
+        <div class="row g-3">
+
+          <!-- 1. Qué es la Calidad de Software -->
+          <div class="col-md-6">
+            <div class="card shadow-sm border-light rounded-3 hover-scale info-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="fs-3 me-2">💡</span>
+                  <h5 class="card-title mb-0">¿Qué es la Calidad de Software?</h5>
+                </div>
+                <p class="card-text text-muted">
+                  La calidad de software es el grado en que un sistema cumple con los requisitos funcionales y no
+                  funcionales,
+                  asegurando eficiencia, seguridad, mantenibilidad y satisfacción del usuario final.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Componentes de la Calidad -->
+          <div class="col-md-6">
+            <div class="card shadow-sm border-light rounded-3 hover-scale info-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="fs-3 me-2">🛠️</span>
+                  <h5 class="card-title mb-0">Componentes de la Calidad</h5>
+                </div>
+                <ul class="list-unstyled mb-0 text-muted">
+                  <li>
+                    • <b>Normas:</b>
+                    <span class="text-primary info-item" style="cursor:pointer;">ISO 25010</span>,
+                    <span class="text-primary info-item" style="cursor:pointer;">ISO 9001</span>,
+                    <span class="text-primary info-item" style="cursor:pointer;">IEEE 730</span>.
+                  </li>
+                  <li>
+                    • <b>Modelos:</b>
+                    <span class="text-primary info-item" style="cursor:pointer;">CMMI</span>,
+                    <span class="text-primary info-item" style="cursor:pointer;">TMMI</span>,
+                    <span class="text-primary info-item" style="cursor:pointer;">Moprosoft</span>.
+                  </li>
+                  <li>• <b>Estándares:</b> Documentación, procesos, métricas y auditorías.</li>
+                  <li>• <b>Pruebas y Evaluación:</b> Evaluación cuantitativa basada en métricas.</li>
+                </ul>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Criterios de Evaluación -->
+          <div class="col-md-6">
+            <div class="card shadow-sm border-light rounded-3 hover-scale info-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="fs-3 me-2">📊</span>
+                  <h5 class="card-title mb-0">Criterios de Evaluación</h5>
+                </div>
+                <p class="text-muted">Aspectos considerados para medir la calidad del software:</p>
+                <ul class="list-unstyled text-muted mb-0">
+                  <li>• <b>Usabilidad:</b> Facilidad de aprendizaje y uso.</li>
+                  <li>• <b>Eficiencia:</b> Rendimiento en relación a los recursos.</li>
+                  <li>• <b>Seguridad:</b> Protección de información y resistencia a ataques.</li>
+                  <li>• <b>Mantenibilidad:</b> Facilidad para corregir y mejorar.</li>
+                  <li>• <b>Compatibilidad:</b> Funcionamiento correcto en distintos entornos.</li>
+                  <li>• <b>Funcionalidad:</b> Cumplimiento de requisitos establecidos.</li>
+                  <li>• <b>Fiabilidad:</b> Estabilidad frente a fallos o errores.</li>
+                  <li>• <b>Portabilidad:</b> Adaptación a otros sistemas.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Método de Evaluación -->
+          <div class="col-md-6">
+            <div class="card shadow-sm border-light rounded-3 hover-scale info-card">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="fs-3 me-2">⚖️</span>
+                  <h5 class="card-title mb-0">Método de Evaluación</h5>
+                </div>
+                <p class="text-muted">
+                  El puntaje final se obtiene combinando las calificaciones de cada criterio, ponderadas según su
+                  importancia:
+                </p>
+                <ul class="list-unstyled text-muted">
+                  <li>• Usabilidad, Eficiencia, Seguridad, Funcionalidad: <b>15%</b> cada una.</li>
+                  <li>• Mantenibilidad, Compatibilidad, Fiabilidad, Portabilidad: <b>10%</b> cada una.</li>
+                </ul>
+                <p class="fw-bold">Puntaje Final = Σ (Valor del criterio × Peso asignado)</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+  <!-- PESTAÑA 2: EVALUADOR -->
+<div class="tab-pane fade" id="evaluador" role="tabpanel">
+  <section id="evaluador-section" class="mb-5">
+    <div class="card shadow hover-scale">
+      <div class="card-body">
+        <form id="formEvaluacion" class="row g-3" autocomplete="off" novalidate>
+
+          <!-- Datos básicos -->
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Nombre de la Aplicación</label>
+            <input type="text" id="app_name" class="form-control" required />
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Descripción</label>
+            <textarea id="descripcion" class="form-control" rows="2" required></textarea>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+
+          <div class="col-md-12">
+            <label class="form-label fw-bold">URL del sitio a evaluar</label>
+            <input type="url" id="url_sitio" class="form-control" placeholder="https://ejemplo.com" required />
+            <div class="invalid-feedback">Ingresa una URL válida.</div>
+          </div>
+
+          <!-- ===================================== -->
+          <!-- SECCIÓN AUTOMÁTICA -->
+          <!-- ===================================== -->
+          <div class="col-12 mt-4">
+            <h5 class="text-primary border-bottom pb-1">
+              🧠 Evaluación Automática
+            </h5>
+            <small class="text-muted">
+              Estos valores se completan automáticamente al ingresar una URL válida.
+            </small>
+          </div>
+
+          <div class="row mt-2 g-3">
+            <!-- Usabilidad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Usabilidad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Evalúa qué tan fácil y agradable es usar el sitio, incluyendo navegación e interactividad."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="usabilidad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-primary" id="peso-usabilidad">15%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-usabilidad" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- Eficiencia -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Eficiencia
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Mide el rendimiento general del sitio: velocidad de carga, optimización y consumo de recursos."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="eficiencia" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-primary" id="peso-eficiencia">15%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-eficiencia" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- Seguridad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Seguridad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Evalúa la presencia de HTTPS, políticas seguras y protección contra vulnerabilidades comunes."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="seguridad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-primary" id="peso-seguridad">15%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-seguridad" style="width:0%"></div>
+              </div>
+            </div>
+
+            <!-- Funcionalidad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Funcionalidad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Analiza si todas las funciones del sitio cumplen correctamente sus objetivos sin errores."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="funcionalidad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-primary" id="peso-funcionalidad">15%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-funcionalidad" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-2 g-3">
+            <!-- Mantenibilidad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Mantenibilidad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Evalúa la facilidad con la que se pueden realizar actualizaciones, mejoras o corrección de errores."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="mantenibilidad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-success" id="peso-mantenibilidad">10%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-mantenibilidad" style="width:60%"></div>
+              </div>
+            </div>
+
+            <!-- Compatibilidad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Compatibilidad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Considera si la aplicación funciona correctamente en distintos navegadores, dispositivos y sistemas operativos."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="compatibilidad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-success" id="peso-compatibilidad">10%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-compatibilidad" style="width:60%"></div>
+              </div>
+            </div>
+
+            <!-- Fiabilidad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Fiabilidad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Mide la estabilidad y consistencia del funcionamiento sin fallos inesperados."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="fiabilidad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-success" id="peso-fiabilidad">10%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-fiabilidad" style="width:60%"></div>
+              </div>
+            </div>
+
+            <!-- Portabilidad -->
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label">
+                Portabilidad
+                <i class="bi bi-info-circle text-secondary" data-bs-toggle="tooltip"
+                   title="Evalúa la facilidad con la que la aplicación puede instalarse o usarse en diferentes entornos."></i>
+              </label>
+              <div class="d-flex align-items-center">
+                <input type="range" id="portabilidad" class="form-range me-2" min="0" max="5" step="0.1" value="0" disabled>
+                <span class="badge bg-success" id="peso-portabilidad">10%</span>
+              </div>
+              <div class="progress mt-1">
+                <div class="progress-bar" id="bar-portabilidad" style="width:60%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Promedio -->
+          <div class="col-12 mt-4">
+            <strong>Promedio General:</strong>
+            <span id="promedioEnTiempoReal">-</span> / 5
+          </div>
+
+          <!-- Botón de envío -->
+          <div class="col-12 text-center mt-3">
+            <button type="submit" class="btn btn-primary" id="btnGuardar">Guardar Evaluación</button>
+          </div>
+        </form>
+
+        <!-- Resultado -->
+        <div id="resultado" class="alert alert-info mt-4 d-none">
+          <h5>Resultados del análisis</h5>
+            <div id="pageSpeedResultados"></div>
+            <div id="geminiResultados"></div>
+        </div>
+
+
+
+      </div>
+    </div>
+  </section>
+</div>
+
+      <!-- PESTAÑA 3: HISTORIAL CON SUB-TABS -->
+      <div class="tab-pane fade" id="historial" role="tabpanel">
+        <ul class="nav nav-pills mb-3" id="historialSubTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="historial-eval-tab" data-bs-toggle="tab"
+              data-bs-target="#historial-eval" type="button" role="tab">Historial de Evaluaciones</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="analisis-tab" data-bs-toggle="tab" data-bs-target="#analisis" type="button"
+              role="tab">Análisis Visual de Resultados</button>
+          </li>
+
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="radar-tab" data-bs-toggle="tab" data-bs-target="#radar" type="button"
+              role="tab">Comparativa por Criterios</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="historialSubTabsContent">
+          <!-- Sub-tab 1: Historial -->
+          <div class="tab-pane fade show active" id="historial-eval" role="tabpanel">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div id="filtros" class="filtros-container mb-3">
+                  <input type="text" id="filtroNombre" placeholder="🔎 Buscar por nombre de aplicación..." />
+                  <input type="number" id="filtroMin" min="0" max="5" step="0.1" placeholder="Puntaje mínimo" />
+                  <input type="number" id="filtroMax" min="0" max="5" step="0.1" placeholder="Puntaje máximo" />
+                  <button id="btnFiltrar">Aplicar filtros</button>
+                  <button id="btnLimpiar">Limpiar</button>
+                  <button id="btnBorrarTodo" class="btn btn-danger btn-sm">🗑️ Borrar historial</button>
+                </div>
+                
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle" id="tablaEvaluaciones">
+                    <thead class="table-primary">
+                      <tr>
+                        <th>Aplicación</th>
+                        <th>Descripción</th>
+                        <th>Resultado</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Comentario</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-tab 2: Análisis -->
+          <div class="tab-pane fade" id="analisis" role="tabpanel">
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h2 class="card-title mb-3 text-center">Resumen General</h2>
+                <div class="row text-center resumen-panel mt-4">
+                  <div class="col-md-3 col-6">
+                    <div class="resumen-card promedio">
+                      <h6>Promedio General</h6>
+                      <p id="promedioGeneral" class="resumen-valor">-</p>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                    <div class="resumen-card mejor">
+                      <h6>Mejor Aplicación</h6>
+                      <p id="mejorApp" class="resumen-valor">-</p>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                    <div class="resumen-card peor">
+                      <h6>Peor Aplicación</h6>
+                      <p id="peorApp" class="resumen-valor">-</p>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                    <div class="resumen-card total">
+                      <h6>Total Evaluaciones</h6>
+                      <p id="totalEvaluaciones" class="resumen-valor">0</p>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title mb-3 text-center">Análisis Visual de Resultados</h2>
+                <canvas id="graficoResultados" height="100"></canvas>
+              </div>
+            </div>
+          </div>
+          <!-- Sub-tab 1: Comparativa por Criterios -->
+          <div class="tab-pane fade" id="radar" role="tabpanel">
+            <div class="card shadow-sm mt-4">
+              <div class="card-body">
+                <h2 class="card-title mb-3 text-center">Comparativa por Criterios</h2>
+                <div class="mb-3">
+                  <label for="selectComparar" class="form-label fw-bold">Selecciona aplicaciones para comparar:</label>
+                  <select id="selectComparar" class="form-select" multiple>
+                    <!-- opciones dinámicas -->
+                  </select>
+                  <small class="text-muted">Mantén presionada Ctrl (Windows) o Cmd (Mac) para elegir varias.</small>
+                </div>
+
+                <div class="radar-container">
+                  <canvas id="graficoRadar" style="max-width: 400px; max-height: 400px; margin: 0 auto;"></canvas>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <footer class="text-center bg-primary text-white py-3 mt-5">
+    <p class="mb-0">Ingeniería de Sistemas - 8° Semestre | Duvan Vera | Alexander Villa | Pablo Pinzón © 2025</p>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+<!-- Integración con la API de Gemini -->
+<script type="module">
+  import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+  const GOOGLE_API_KEY = "AIzaSyBI745APBmHfTfHuc1-9XqzjqtkyQvS--0"; // tu clave real
+
+  // Hacer disponible el cliente en window (para que script.js pueda usarlo)
+  window.genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+</script>
+
+<!-- Tu script principal -->
+<script type="module" src="script.js"></script>
+
+
+  <!-- Modal para info -->
+  <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalTitle"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔹 Ventana de carga -->
+<div id="loadingIA" class="loading-overlay d-none">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <p>Analizando sitio y generando evaluación, espere por favor...</p>
+  </div>
+</div>
+
+</body>
+
+</html>
