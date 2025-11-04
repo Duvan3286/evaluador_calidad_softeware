@@ -15,10 +15,10 @@ app.use(bodyParser.json());
 
 // ----------------------------------------------------
 // 🧠 CONEXIÓN A TURSO (DB Remota)
-// Usamos variables de entorno que Railway inyectará
+// CORREGIDO: Usamos TURSO_DB_URL y TURSO_DB_TOKEN
 const db = createClient({
-    url: process.env.TURSO_DATABASE_URL,
-    authToken: process.env.TURSO_AUTH_TOKEN, 
+    url: process.env.TURSO_DB_URL, // ✅ CORREGIDO
+    authToken: process.env.TURSO_DB_TOKEN, // ✅ CORREGIDO
 });
 // ----------------------------------------------------
 
