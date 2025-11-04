@@ -682,15 +682,13 @@ async function evaluarSitio(url) {
   const resultadoDiv = document.getElementById("resultado");
   const promedioEl = document.getElementById("promedioEnTiempoReal");
 
-  // 🧹 LIMPIAR RESULTADOS ANTERIORES
   if (resultadoDiv) {
     resultadoDiv.classList.add("d-none");
-    resultadoDiv.innerHTML = ""; // limpia resultados viejos
+    resultadoDiv.innerHTML = "";
   }
-
   if (promedioEl) promedioEl.textContent = "-";
 
-  [
+  const nombres = [
     "usabilidad",
     "eficiencia",
     "seguridad",
@@ -699,7 +697,8 @@ async function evaluarSitio(url) {
     "compatibilidad",
     "fiabilidad",
     "portabilidad",
-  ].forEach((nombre) => {
+  ];
+  nombres.forEach((nombre) => {
     const input = document.getElementById(nombre);
     const bar = document.getElementById(`bar-${nombre}`);
     const label = document.getElementById(`${nombre}Valor`);
@@ -709,57 +708,65 @@ async function evaluarSitio(url) {
   });
 
   try {
-    // Mostrar spinner
     if (loading) {
       loading.classList.remove("d-none");
       document.body.style.overflow = "hidden";
     }
 
-    // --- 1️⃣ Llamado a la API de PageSpeed ---
+    // --- 1️⃣ PageSpeed ---
     const res = await fetch(`/api/pagespeed?url=${encodeURIComponent(url)}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
 
     const categories = data.lighthouseResult?.categories || {};
-    const performance = categories.performance?.score ? categories.performance.score * 100 : 0;
-    const accessibility = categories.accessibility?.score ? categories.accessibility.score * 100 : 0;
-    const bestPractices = categories["best-practices"]?.score ? categories["best-practices"].score * 100 : 0;
-    const seo = categories.seo?.score ? categories.seo.score * 100 : 0;
+    const performance = (categories.performance?.score ?? 0) * 100;
+    const accessibility = (categories.accessibility?.score ?? 0) * 100;
+    const bestPractices = (categories["best-practices"]?.score ?? 0) * 100;
+    const seo = (categories.seo?.score ?? 0) * 100;
 
-    // Convertir a escala 0–5
-    let usabilidadValue = (accessibility / 20).toFixed(1);
-    let eficienciaValue = (performance / 20).toFixed(1);
-    let seguridadValue = (seo / 20).toFixed(1);
-    let funcionalidadValue = (bestPractices / 20).toFixed(1);
+    // Escala 0–5
+    const usabilidadValue = (accessibility / 20).toFixed(1);
+    const eficienciaValue = (performance / 20).toFixed(1);
+    const seguridadValue = (seo / 20).toFixed(1);
+    const funcionalidadValue = (bestPractices / 20).toFixed(1);
 
-    console.log("📊 Métricas de PageSpeed:", { performance, accessibility, bestPractices, seo });
+    console.log("📊 Métricas de PageSpeed:", {
+      performance,
+      accessibility,
+      bestPractices,
+      seo,
+    });
 
-    // --- 2️⃣ Llamado a Gemini ---
+    // --- 2️⃣ Gemini ---
     const geminiRes = await fetch(`/api/gemini?url=${encodeURIComponent(url)}`);
-    window.geminiData = await geminiRes.json();
-    const geminiData = window.geminiData;
+    const geminiData = await geminiRes.json();
     console.log("🤖 Evaluación adicional (Gemini):", geminiData);
 
-    // --- 3️⃣ Combinar valores ---
+    // --- 3️⃣ Combinar criterios ---
     const criterios = {
-      usabilidad: parseFloat(usabilidadValue),
-      eficiencia: parseFloat(eficienciaValue),
-      seguridad: parseFloat(seguridadValue),
-      funcionalidad: parseFloat(funcionalidadValue),
-      mantenibilidad: geminiData.mantenibilidad || 0,
-      compatibilidad: geminiData.compatibilidad || 0,
-      fiabilidad: geminiData.fiabilidad || 0,
-      portabilidad: geminiData.portabilidad || 0,
+      usabilidad: parseFloat(usabilidadValue) || 0,
+      eficiencia: parseFloat(eficienciaValue) || 0,
+      seguridad: parseFloat(seguridadValue) || 0,
+      funcionalidad: parseFloat(funcionalidadValue) || 0,
+      mantenibilidad: parseFloat(geminiData.mantenibilidad) || 0,
+      compatibilidad: parseFloat(geminiData.compatibilidad) || 0,
+      fiabilidad: parseFloat(geminiData.fiabilidad) || 0,
+      portabilidad: parseFloat(geminiData.portabilidad) || 0,
     };
 
-    // --- 🔧 Normalizar valores de Gemini (0–100 → 0–5) ---
+    console.log("🧩 Antes de normalizar:", criterios);
+
+    // --- 4️⃣ Normalizar a escala 0–5 ---
     for (const key in criterios) {
-      let valor = parseFloat(criterios[key]) || 0;
-      if (valor > 5) valor = (valor / 100) * 5;
-      criterios[key] = valor;
+      let valor = criterios[key];
+      if (isNaN(valor)) valor = 0; // si viene null o undefined
+      if (valor > 5) valor = (valor / 100) * 5; // convierte 0–100 → 0–5
+      criterios[key] = parseFloat(valor.toFixed(2));
     }
 
-    // --- 4️⃣ Actualizar sliders ---
+    console.log("✅ Después de normalizar:", criterios);
+
+    // --- 5️⃣ Actualizar sliders ---
     Object.entries(criterios).forEach(([nombre, val]) => {
       const input = document.getElementById(nombre);
       const bar = document.getElementById(`bar-${nombre}`);
@@ -769,25 +776,23 @@ async function evaluarSitio(url) {
       if (label) label.textContent = val.toFixed(1);
     });
 
-    console.log("✅ Criterios normalizados:", criterios);
-
-    // --- 5️⃣ Promedio total ---
+    // --- 6️⃣ Calcular promedio ---
     const promedio =
-      Object.values(criterios).reduce((a, b) => a + parseFloat(b || 0), 0) /
+      Object.values(criterios).reduce((a, b) => a + b, 0) /
       Object.keys(criterios).length;
 
-    // --- 6️⃣ Mostrar resultados ---
+    console.log("🎯 Promedio calculado:", promedio);
+
+    // --- 7️⃣ Mostrar resultados ---
     resultadoDiv.innerHTML = `
       <h4>Resultados del Análisis</h4>
       <ul>
-        <li><b>Usabilidad:</b> ${criterios.usabilidad.toFixed(1)}</li>
-        <li><b>Eficiencia:</b> ${criterios.eficiencia.toFixed(1)}</li>
-        <li><b>Seguridad:</b> ${criterios.seguridad.toFixed(1)}</li>
-        <li><b>Funcionalidad:</b> ${criterios.funcionalidad.toFixed(1)}</li>
-        <li><b>Mantenibilidad:</b> ${criterios.mantenibilidad.toFixed(1)}</li>
-        <li><b>Compatibilidad:</b> ${criterios.compatibilidad.toFixed(1)}</li>
-        <li><b>Fiabilidad:</b> ${criterios.fiabilidad.toFixed(1)}</li>
-        <li><b>Portabilidad:</b> ${criterios.portabilidad.toFixed(1)}</li>
+        ${Object.entries(criterios)
+          .map(
+            ([k, v]) =>
+              `<li><b>${k.charAt(0).toUpperCase() + k.slice(1)}:</b> ${v.toFixed(1)}</li>`
+          )
+          .join("")}
       </ul>
       <p><b>Promedio general:</b> ${promedio.toFixed(2)}</p>
       <p><b>Comentarios:</b> ${geminiData.comentarios || "Sin comentarios disponibles."}</p>
@@ -805,7 +810,6 @@ async function evaluarSitio(url) {
     }
   }
 }
-
 
 
 
