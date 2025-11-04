@@ -673,6 +673,7 @@ function actualizarPromedio() {
  * @param {string} url - URL del sitio a evaluar.
  * @returns {Promise<Object>} Datos de la API de PageSpeed.
  */
+
 // ====================================================
 // 📊 FUNCIÓN PRINCIPAL: obtener métricas automáticas
 // ====================================================
@@ -689,7 +690,6 @@ async function evaluarSitio(url) {
 
   if (promedioEl) promedioEl.textContent = "-";
 
-  // Reiniciar etiquetas de cada criterio
   [
     "usabilidad",
     "eficiencia",
@@ -752,6 +752,13 @@ async function evaluarSitio(url) {
       portabilidad: geminiData.portabilidad || 0,
     };
 
+    // --- 🔧 Normalizar valores de Gemini (0–100 → 0–5) ---
+    for (const key in criterios) {
+      let valor = parseFloat(criterios[key]) || 0;
+      if (valor > 5) valor = (valor / 100) * 5;
+      criterios[key] = valor;
+    }
+
     // --- 4️⃣ Actualizar sliders ---
     Object.entries(criterios).forEach(([nombre, val]) => {
       const input = document.getElementById(nombre);
@@ -762,36 +769,32 @@ async function evaluarSitio(url) {
       if (label) label.textContent = val.toFixed(1);
     });
 
+    console.log("✅ Criterios normalizados:", criterios);
+
     // --- 5️⃣ Promedio total ---
-const promedio =
-  Object.values(criterios).reduce((a, b) => a + parseFloat(b || 0), 0) /
-  Object.keys(criterios).length;
+    const promedio =
+      Object.values(criterios).reduce((a, b) => a + parseFloat(b || 0), 0) /
+      Object.keys(criterios).length;
 
-// 🔧 Convertir todos los criterios a número antes de mostrarlos
-for (const key in criterios) {
-  criterios[key] = parseFloat(criterios[key]) || 0;
-}
+    // --- 6️⃣ Mostrar resultados ---
+    resultadoDiv.innerHTML = `
+      <h4>Resultados del Análisis</h4>
+      <ul>
+        <li><b>Usabilidad:</b> ${criterios.usabilidad.toFixed(1)}</li>
+        <li><b>Eficiencia:</b> ${criterios.eficiencia.toFixed(1)}</li>
+        <li><b>Seguridad:</b> ${criterios.seguridad.toFixed(1)}</li>
+        <li><b>Funcionalidad:</b> ${criterios.funcionalidad.toFixed(1)}</li>
+        <li><b>Mantenibilidad:</b> ${criterios.mantenibilidad.toFixed(1)}</li>
+        <li><b>Compatibilidad:</b> ${criterios.compatibilidad.toFixed(1)}</li>
+        <li><b>Fiabilidad:</b> ${criterios.fiabilidad.toFixed(1)}</li>
+        <li><b>Portabilidad:</b> ${criterios.portabilidad.toFixed(1)}</li>
+      </ul>
+      <p><b>Promedio general:</b> ${promedio.toFixed(2)}</p>
+      <p><b>Comentarios:</b> ${geminiData.comentarios || "Sin comentarios disponibles."}</p>
+    `;
+    resultadoDiv.classList.remove("d-none");
 
-// --- 6️⃣ Mostrar resultados ---
-resultadoDiv.innerHTML = `
-  <h4>Resultados del Análisis</h4>
-  <ul>
-    <li><b>Usabilidad:</b> ${criterios.usabilidad.toFixed(1)}</li>
-    <li><b>Eficiencia:</b> ${criterios.eficiencia.toFixed(1)}</li>
-    <li><b>Seguridad:</b> ${criterios.seguridad.toFixed(1)}</li>
-    <li><b>Funcionalidad:</b> ${criterios.funcionalidad.toFixed(1)}</li>
-    <li><b>Mantenibilidad:</b> ${criterios.mantenibilidad.toFixed(1)}</li>
-    <li><b>Compatibilidad:</b> ${criterios.compatibilidad.toFixed(1)}</li>
-    <li><b>Fiabilidad:</b> ${criterios.fiabilidad.toFixed(1)}</li>
-    <li><b>Portabilidad:</b> ${criterios.portabilidad.toFixed(1)}</li>
-  </ul>
-  <p><b>Promedio general:</b> ${promedio.toFixed(2)}</p>
-  <p><b>Comentarios:</b> ${geminiData.comentarios || "Sin comentarios disponibles."}</p>
-`;
-resultadoDiv.classList.remove("d-none");
-
-return criterios;
-
+    return criterios;
   } catch (err) {
     console.error("❌ Error obteniendo métricas:", err);
     alert("Ocurrió un error al analizar la URL. Verifica la dirección e intenta nuevamente.");
@@ -802,6 +805,7 @@ return criterios;
     }
   }
 }
+
 
 
 
